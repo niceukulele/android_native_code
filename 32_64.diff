@@ -1,0 +1,71 @@
+2c2
+< cpl_memory.o:     file format elf32-littlearm
+---
+> cpl_memory.o:     file format elf64-littleaarch64
+7c7
+< 00000000 <cpl_malloc>:
+---
+> 0000000000000000 <cpl_malloc>:
+14,16c14,15
+<    0:	b570      	push	{r4, r5, r6, lr}
+<    2:	460e      	mov	r6, r1
+<    4:	4605      	mov	r5, r0
+---
+>    0:	d10083ff 	sub	sp, sp, #0x20
+>    4:	a90053f3 	stp	x19, x20, [sp]
+18c17,29
+<    6:	f7ff fffe 	bl	0 <malloc>
+---
+>    8:	93407c14 	sxtw	x20, w0
+>    c:	aa1403e0 	mov	x0, x20
+>  * \parma line The line number of the function call.
+>  *
+>  * \return A void pointer to the allocated space, or NULL if there is insufficient memory available.
+>  */
+> void *cpl_malloc(s32 size, u8 defaultValue, const s8 *pFilename, const s8 *pFuncName, s32 line)
+> {
+>   10:	a9017bf5 	stp	x21, x30, [sp,#16]
+>   14:	53001c35 	uxtb	w21, w1
+>     u8 *pMem = (u8 *)malloc(size);
+>   18:	94000000 	bl	0 <malloc>
+>   1c:	aa0003f3 	mov	x19, x0
+20,21c31
+<    a:	4604      	mov	r4, r0
+<    c:	b118      	cbz	r0, 16 <cpl_malloc+0x16>
+---
+>   20:	b4000080 	cbz	x0, 30 <cpl_malloc+0x30>
+24,26c34,36
+<    e:	4631      	mov	r1, r6
+<   10:	462a      	mov	r2, r5
+<   12:	f7ff fffe 	bl	0 <memset>
+---
+>   24:	2a1503e1 	mov	w1, w21
+>   28:	aa1403e2 	mov	x2, x20
+>   2c:	94000000 	bl	0 <memset>
+30,32c40,44
+<   16:	4620      	mov	r0, r4
+<   18:	bd70      	pop	{r4, r5, r6, pc}
+<   1a:	bf00      	nop
+---
+>   30:	aa1303e0 	mov	x0, x19
+>   34:	a94053f3 	ldp	x19, x20, [sp]
+>   38:	a9417bf5 	ldp	x21, x30, [sp,#16]
+>   3c:	910083ff 	add	sp, sp, #0x20
+>   40:	d65f03c0 	ret
+36c48
+< 00000000 <cpl_realloc>:
+---
+> 0000000000000000 <cpl_realloc>:
+43c55,56
+<    0:	f7ff bffe 	b.w	0 <realloc>
+---
+>    0:	93407c21 	sxtw	x1, w1
+>    4:	14000000 	b	0 <realloc>
+47c60
+< 00000000 <cpl_free>:
+---
+> 0000000000000000 <cpl_free>:
+54c67
+<    0:	f7ff bffe 	b.w	0 <free>
+---
+>    0:	14000000 	b	0 <free>
